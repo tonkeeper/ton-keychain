@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "ton-crypto": "^3.2.0",
+    "ton-crypto-primitives": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.1",
+    "buffer": "^6.0.3",
+    "jest": "^27.1.0",
+    "ts-jest": "^27.0.5"
+  }
+}
