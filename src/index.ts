@@ -4,7 +4,16 @@ import {bytesToMnemonics} from "ton-crypto/dist/mnemonic/mnemonic";
 
 export const WORDS_NUMBER = 24;
 
-export async function entropyToTonCompatibleSeed(entropy: Buffer) {
+/**
+ * ака "F"
+ */
+export async function getChildMnemonics(seedOrEntropy: Buffer, label: string): Promise<string[]> {
+    const childEntropy = await hmac_sha256(seedOrEntropy, label);
+    const { mnemonics } = await entropyToTonCompatibleSeed(childEntropy);
+    return mnemonics;
+}
+
+export async function entropyToTonCompatibleSeed(entropy: Buffer): Promise<{ seed: Buffer, mnemonics: string[] }> {
     const SEQNO_SIZE_BYTES = 4;
     const maxSeqno = Math.pow(2, SEQNO_SIZE_BYTES * 8) - 1;
     for (let i= 0; i < maxSeqno; i++) {
@@ -17,7 +26,7 @@ export async function entropyToTonCompatibleSeed(entropy: Buffer) {
         const mnemonics = bytesToMnemonics(iterationSeed, WORDS_NUMBER);
 
         if (await mnemonicValidate(mnemonics)) {
-            return iterationSeed;
+            return { seed: iterationSeed, mnemonics };
         }
     }
     throw new Error('Ton mnemonics was not found in 2^32 iterations');
