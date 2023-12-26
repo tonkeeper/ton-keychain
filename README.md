@@ -1,5 +1,7 @@
-# generate ton compatible mnemonic from arbitrary seed
+# Generate ton compatible mnemonic from arbitrary seed
 
-## getting started
+[Specification](SPECIFICATION.md)
+
+## Getting started
 - `npm i`
 - `npm run test`
