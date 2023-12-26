@@ -11,12 +11,9 @@ export async function getChildMnemonics(seedOrEntropy: Buffer, label: string): P
 }
 
 export async function entropyToTonCompatibleSeed(entropy: Buffer): Promise<{ seed: Buffer, mnemonics: string[] }> {
-    const SEQNO_SIZE_BYTES = 4;
-
-    // less than 1 of 10^200 probability to not find correct mnemonics
-    const maxSeqno = 0xffffffff; // 2^(SEQNO_SIZE_BYTES * 8) - 1
-    for (let i= 0; i < maxSeqno; i++) {
-        const hmacData = Buffer.alloc(SEQNO_SIZE_BYTES);
+    // 32-bit space is enough to find a valid mnemonic with ≈1-10^200 chance.
+    for (let i= 0; i < 0xffffffff; i++) {
+        const hmacData = Buffer.alloc(4);
         hmacData.writeUint32BE(i);
 
         // get 512 bits hash and slice first 264 bits in order to get enough bits for 24 words mnemonics
