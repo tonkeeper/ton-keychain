@@ -4,11 +4,8 @@ import {bytesToMnemonics} from "ton-crypto/dist/mnemonic/mnemonic";
 
 export const WORDS_NUMBER = 24;
 
-/**
- * ака "F"
- */
 export async function getChildMnemonics(seedOrEntropy: Buffer, label: string): Promise<string[]> {
-    const childEntropy = await hmac_sha256(seedOrEntropy, label);
+    const childEntropy = await hmac_sha256(label, seedOrEntropy);
     const { mnemonics } = await entropyToTonCompatibleSeed(childEntropy);
     return mnemonics;
 }
@@ -23,7 +20,7 @@ export async function entropyToTonCompatibleSeed(entropy: Buffer): Promise<{ see
         hmacData.writeUint32BE(i);
 
         // get 512 bits hash and slice first 264 bits in order to get enough bits for 24 words mnemonics
-        const iterationEntropy = await hmac_sha512(entropy, hmacData);
+        const iterationEntropy = await hmac_sha512(hmacData, entropy);
         const iterationSeed = iterationEntropy.subarray(0, WORDS_NUMBER * 11 / 8);
         const mnemonics = bytesToMnemonics(iterationSeed, WORDS_NUMBER);
 
