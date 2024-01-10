@@ -3,13 +3,11 @@
     "module": "commonjs",
     "target": "esnext",
     "sourceMap": false,
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
-    "outDir": "./dist",
     "skipLibCheck": true
   },
   "exclude": [
-    "node_modules",
-    "tests"
+    "node_modules"
   ]
 }
