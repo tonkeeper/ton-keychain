@@ -13,11 +13,15 @@ program
     .argument('<mnemonics>', '24 words ton root mnemonics')
     .option('-t, --tonaccs <tonaccs>', 'Number of the ton accounts to generate', '5')
     .option('-b, --btcaccs <btcaccs>', 'Number of the btc addresses to generate', '5')
+    .option('-s, --segwit', 'Use segwit address type instead of legacy')
     .action(main);
 
 program.parse();
 
-async function main(mnemonics: string, options: { tonaccs: string; btcaccs: string }) {
+async function main(
+    mnemonics: string,
+    options: { tonaccs: string; btcaccs: string; segwit: boolean }
+) {
     const mnemonicsArr = mnemonics.split(' ').filter(Boolean);
     if (mnemonicsArr.length !== 24) {
         throw new Error('Wrong mnemonics format: should be 24 words separated by spaces');
@@ -70,7 +74,8 @@ async function main(mnemonics: string, options: { tonaccs: string; btcaccs: stri
     console.log('Public key:', trxAccount.publicKey);
     console.log('-----------------------------------------------------\n');
 
-    const btcProvider = await BtcAccountsProvider.fromEntropy(entropy);
+    const addressType = options.segwit ? 'segwit' : 'legacy';
+    const btcProvider = await BtcAccountsProvider.fromEntropy(entropy, addressType);
     const btcAccount = btcProvider.rootAccount;
 
     console.log(`Btc root account`);
@@ -81,7 +86,7 @@ async function main(mnemonics: string, options: { tonaccs: string; btcaccs: stri
     console.log('--');
 
     for (let i = 0; i < Number(options.btcaccs); i++) {
-        const btcAcc = btcProvider.generateChildAccount(0, i);
+        const btcAcc = btcProvider.generateChildAccount(0, i, addressType);
         console.log(`Btc address #${i + 1}`);
         console.log(btcAcc.address);
         console.log('--\n');

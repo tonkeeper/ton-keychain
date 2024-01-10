@@ -9,10 +9,17 @@ export class BtcAccount extends Account {
 
     public readonly privateKey: string;
 
-    constructor(public readonly mnemonics: string[], public readonly bip32Account: BIP32Interface) {
+    constructor(
+        public readonly mnemonics: string[],
+        public readonly bip32Account: BIP32Interface,
+        addressType: 'legacy' | 'segwit' = 'legacy'
+    ) {
         super();
         this.publicKey = '0x' + bip32Account.publicKey.toString('hex');
         this.privateKey = '0x' + bip32Account.privateKey!.toString('hex');
-        this.address = bitcoin.payments.p2pkh({ pubkey: bip32Account.publicKey }).address!;
+        this.address =
+            addressType === 'legacy'
+                ? bitcoin.payments.p2pkh({ pubkey: bip32Account.publicKey }).address!
+                : bitcoin.payments.p2wpkh({ pubkey: bip32Account.publicKey }).address!;
     }
 }

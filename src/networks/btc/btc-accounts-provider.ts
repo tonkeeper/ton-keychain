@@ -19,7 +19,10 @@ export class BtcAccountsProvider extends AccountsProvider {
 
     private static readonly NETWORK_LABEL = 'btc_root';
 
-    static async fromEntropy(entropy: Buffer): Promise<BtcAccountsProvider> {
+    static async fromEntropy(
+        entropy: Buffer,
+        addressType: 'legacy' | 'segwit' = 'legacy'
+    ): Promise<BtcAccountsProvider> {
         const networkEntropy = this.patchEntropy(entropy);
         const mnemonics = entropyToMnemonic(networkEntropy, wordlist);
         const seed = mnemonicToSeedSync(mnemonics);
@@ -27,14 +30,18 @@ export class BtcAccountsProvider extends AccountsProvider {
 
         const account = root.derivePath(this.DERIVATION_PATH);
 
-        return new BtcAccountsProvider(mnemonics, account);
+        return new BtcAccountsProvider(mnemonics, account, addressType);
     }
 
     public readonly rootAccount: BtcAccount;
 
-    public generateChildAccount(account: number, index: number): BtcAccount {
+    public generateChildAccount(
+        account: number,
+        index: number,
+        addressType: 'legacy' | 'segwit' = 'legacy'
+    ): BtcAccount {
         const childNode = this.rootNode.derive(account).derive(index);
-        return new BtcAccount(this.rootAccount.mnemonics, childNode);
+        return new BtcAccount(this.rootAccount.mnemonics, childNode, addressType);
     }
 
     private static patchEntropy(seed: Buffer): Uint8Array {
@@ -45,8 +52,16 @@ export class BtcAccountsProvider extends AccountsProvider {
         );
     }
 
-    private constructor(mnemonics: string, private readonly rootNode: BIP32Interface) {
+    private constructor(
+        mnemonics: string,
+        private readonly rootNode: BIP32Interface,
+        addressType: 'legacy' | 'segwit' = 'legacy'
+    ) {
         super();
-        this.rootAccount = new BtcAccount(mnemonics.split(' '), rootNode.derive(0).derive(0));
+        this.rootAccount = new BtcAccount(
+            mnemonics.split(' '),
+            rootNode.derive(0).derive(0),
+            addressType
+        );
     }
 }

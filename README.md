@@ -16,6 +16,7 @@
 - -V, --version            output the version number
 - -t, --tonaccs <tonaccs>  Number of the ton accounts to generate (default: "5")
 - -b, --btcaccs <btcaccs>  Number of the btc addresses to generate (default: "5")
+- -s, --segwit             Use segwit address type instead of legacy
 - -h, --help               display help for command
 
 ## Run tests
