@@ -18,12 +18,18 @@ program
 program.parse();
 
 async function main(mnemonics: string, options: { tonaccs: string; btcaccs: string }) {
+    const mnemonicsArr = mnemonics.split(' ').filter(Boolean);
+    if (mnemonicsArr.length !== 24) {
+        throw new Error('Wrong mnemonics format: should be 24 words separated by spaces');
+    }
     const tonAccountsNumber = Number(options.tonaccs);
-    const entropy = await mnemonicToEntropy(mnemonics.split(' '));
-    const tonAccountsProvider = await TonAccountsProvider.fromMnemonics(mnemonics.split(' '));
+    const entropy = await mnemonicToEntropy(mnemonicsArr);
+    const tonAccountsProvider = await TonAccountsProvider.fromMnemonics(mnemonicsArr);
 
     console.log('Ton root account');
-    console.log(`Address w4: ${tonAccountsProvider.rootAccount.address.toString({ bounceable: false })}`);
+    console.log(
+        `Address w4: ${tonAccountsProvider.rootAccount.address.toString({ bounceable: false })}`
+    );
     console.log(tonAccountsProvider.rootAccount.mnemonics.join(' '));
     console.log('Private key:', tonAccountsProvider.rootAccount.privateKey);
     console.log('Public key:', tonAccountsProvider.rootAccount.publicKey);
