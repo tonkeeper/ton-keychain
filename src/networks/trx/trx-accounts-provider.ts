@@ -11,21 +11,24 @@ export class TrxAccountsProvider extends AccountsProvider {
 
     private static CHECKSUM_BITS = 4;
 
-    private static readonly DERIVATION_PATH = "m/44'/195'/0'" as const;
+    private static readonly DERIVATION_PATH = "m/44'/195'/0'/0" as const;
 
     private static readonly NETWORK_LABEL = 'trx-0x2b6653dc_root';
 
     static async fromEntropy(entropy: Buffer): Promise<TrxAccountsProvider> {
         const networkEntropy = this.patchEntropy(entropy);
         const mnemonics = entropyToMnemonic(networkEntropy, wordlist);
-        const hdAccount = ethers.HDNodeWallet.fromPhrase(mnemonics).derivePath(
+        const hdAccount = ethers.HDNodeWallet.fromPhrase(
+            mnemonics,
+            undefined,
             this.getDerivationPath(0)
         );
+
         const trxAccount = new TrxAccount(mnemonics.split(' '), hdAccount);
         return new TrxAccountsProvider(trxAccount);
     }
 
-    private static getDerivationPath(index: number): `m/44'/195'/0'/${number}` {
+    private static getDerivationPath(index: number): `m/44'/195'/0'/0/${number}` {
         return `${this.DERIVATION_PATH}/${index}`;
     }
 

@@ -22,13 +22,11 @@ async function main(mnemonics: string, options: { tonaccs: string; btcaccs: stri
     const entropy = await mnemonicToEntropy(mnemonics.split(' '));
     const tonAccountsProvider = await TonAccountsProvider.fromMnemonics(mnemonics.split(' '));
 
-    console.log(`Ton root account`);
-    console.log(
-        tonAccountsProvider.rootAccount.mnemonics.join(' '),
-        '\n',
-        'Private key:',
-        tonAccountsProvider.rootAccount.privateKey
-    );
+    console.log('Ton root account');
+    console.log(`Address w4: ${tonAccountsProvider.rootAccount.address.toString({ bounceable: false })}`);
+    console.log(tonAccountsProvider.rootAccount.mnemonics.join(' '));
+    console.log('Private key:', tonAccountsProvider.rootAccount.privateKey);
+    console.log('Public key:', tonAccountsProvider.rootAccount.publicKey);
     const children = await Promise.all(
         [...new Array(tonAccountsNumber)].map((_, i) =>
             tonAccountsProvider.generateChildAccount(i.toString())
@@ -38,7 +36,10 @@ async function main(mnemonics: string, options: { tonaccs: string; btcaccs: stri
     children.forEach((tonAcc, index) => {
         console.log('--\n');
         console.log(`Ton child account #${index + 1}`);
-        console.log(tonAcc.mnemonics.join(' '), '\n', 'Private key:', tonAcc.privateKey);
+        console.log(`Address w4: ${tonAcc.address.toString({ bounceable: false })}`);
+        console.log(tonAcc.mnemonics.join(' '));
+        console.log('Private key:', tonAcc.privateKey);
+        console.log('Public key:', tonAcc.publicKey);
     });
 
     console.log('\n-----------------------------------------------------\n');
@@ -47,30 +48,36 @@ async function main(mnemonics: string, options: { tonaccs: string; btcaccs: stri
     const ethAcc = ethProvider.rootAccount;
 
     console.log(`Eth account`);
-    console.log('Address: ', ethAcc.address, '\n');
-    console.log(ethAcc.mnemonics.join(' '), '\n', 'Private key:', ethAcc.privateKey);
+    console.log('Address: ', ethAcc.address);
+    console.log(ethAcc.mnemonics.join(' '));
+    console.log('Private key:', ethAcc.privateKey);
+    console.log('Public key:', ethAcc.publicKey);
     console.log('-----------------------------------------------------\n');
 
     const trxProvider = await TrxAccountsProvider.fromEntropy(entropy);
     const trxAccount = trxProvider.rootAccount;
 
     console.log(`Trx account`);
-    console.log('Address: ', trxAccount.address, '\n');
-    console.log(trxAccount.mnemonics.join(' '), '\n', 'Private key:', trxAccount.privateKey);
+    console.log('Address: ', trxAccount.address);
+    console.log(trxAccount.mnemonics.join(' '));
+    console.log('Private key:', trxAccount.privateKey);
+    console.log('Public key:', trxAccount.publicKey);
     console.log('-----------------------------------------------------\n');
 
     const btcProvider = await BtcAccountsProvider.fromEntropy(entropy);
     const btcAccount = btcProvider.rootAccount;
 
     console.log(`Btc root account`);
-    console.log(btcAccount.address, '\n');
-    console.log(btcAccount.mnemonics.join(' '), '\n', 'Private key:',  btcAccount.privateKey);
+    console.log(btcAccount.address);
+    console.log(btcAccount.mnemonics.join(' '));
+    console.log('Private key:', btcAccount.privateKey);
+    console.log('Public key:', btcAccount.publicKey);
     console.log('--');
 
     for (let i = 0; i < Number(options.btcaccs); i++) {
         const btcAcc = btcProvider.generateChildAccount(0, i);
         console.log(`Btc address #${i + 1}`);
-        console.log(btcAcc.address, '\n');
+        console.log(btcAcc.address);
         console.log('--\n');
     }
 }

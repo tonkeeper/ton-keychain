@@ -11,6 +11,10 @@ export class TrxAccount extends Account {
         return this.account.privateKey;
     }
 
+    get publicKey(): string {
+        return this.account.publicKey;
+    }
+
     readonly address: string;
 
     constructor(public readonly mnemonics: string[], public readonly account: ethers.HDNodeWallet) {

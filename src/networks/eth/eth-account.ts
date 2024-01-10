@@ -8,8 +8,11 @@ export class EthAccount extends Account {
 
     readonly privateKey: string;
 
+    readonly publicKey: string;
+
     constructor(public readonly mnemonics: string[], public readonly account: HDAccount) {
         super();
-        this.privateKey = Buffer.from(this.account.getHdKey().privateKey!).toString('hex');
+        this.privateKey = '0x' + Buffer.from(this.account.getHdKey().privateKey!).toString('hex');
+        this.publicKey = '0x' + Buffer.from(this.account.getHdKey().publicKey!).toString('hex');
     }
 }

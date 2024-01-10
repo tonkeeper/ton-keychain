@@ -11,7 +11,7 @@ export class EthAccountsProvider extends AccountsProvider {
 
     private static CHECKSUM_BITS = 4;
 
-    private static readonly DERIVATION_PATH = "m/44'/60'/0'" as const;
+    private static readonly DERIVATION_PATH = "m/44'/60'/0'/0" as const;
 
     private static readonly NETWORK_LABEL = 'eth-0x1_root';
 
@@ -23,7 +23,7 @@ export class EthAccountsProvider extends AccountsProvider {
         return new EthAccountsProvider(ethAccount);
     }
 
-    private static getDerivationPath(index: number): `m/44'/60'/0'/${number}` {
+    private static getDerivationPath(index: number): `m/44'/60'/0'/0/${number}` {
         return `${this.DERIVATION_PATH}/${index}`;
     }
 
