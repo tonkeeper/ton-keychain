@@ -10,9 +10,10 @@
     "commander": "^11.1.0",
     "ethers": "^6.9.2",
     "tiny-secp256k1": "^2.2.3",
-    "ton-core": "^0.53.0",
-    "ton-crypto": "^3.2.0",
-    "ton-crypto-primitives": "^2.0.0",
+    "@ton/ton": "^13.9.0",
+    "@ton/core": "^0.53.0",
+    "@ton/crypto": "^3.2.0",
+    "@ton/crypto-primitives": "^2.0.0",
     "viem": "^2.0.3"
   },
   "devDependencies": {

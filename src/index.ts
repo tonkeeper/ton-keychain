@@ -1,6 +1,6 @@
-import { hmac_sha512, mnemonicValidate } from 'ton-crypto';
+import { hmac_sha512, mnemonicValidate } from '@ton/crypto';
 import { hmac_sha256 } from './utils';
-import { bytesToMnemonics } from 'ton-crypto/dist/mnemonic/mnemonic';
+import { bytesToMnemonics } from '@ton/crypto/dist/mnemonic/mnemonic';
 
 export const WORDS_NUMBER = 24;
 

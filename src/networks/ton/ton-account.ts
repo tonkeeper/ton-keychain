@@ -1,5 +1,5 @@
 import { Account } from '../account';
-import { mnemonicToPrivateKey } from 'ton-crypto';
+import { mnemonicToPrivateKey } from '@ton/crypto';
 
 export class TonAccount extends Account {
     static async fromMnemonics(mnemonics: string[]): Promise<TonAccount> {

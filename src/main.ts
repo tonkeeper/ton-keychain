@@ -1,4 +1,4 @@
-import { mnemonicToEntropy } from 'ton-crypto/dist/mnemonic/mnemonic';
+import { mnemonicToEntropy } from '@ton/crypto/dist/mnemonic/mnemonic';
 import { TonAccountsProvider } from './networks/ton/ton-accounts-provider';
 import { EthAccountsProvider } from './networks/eth/eth-accounts-provider';
 import { TrxAccountsProvider } from './networks/trx/trx-accounts-provider';

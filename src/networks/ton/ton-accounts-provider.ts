@@ -1,7 +1,7 @@
 import { AccountsProvider } from '../accounts-provider';
 import { hmac_sha256 } from './utils';
-import { hmac_sha512, mnemonicValidate } from 'ton-crypto';
-import {bytesToMnemonics, mnemonicToEntropy} from 'ton-crypto/dist/mnemonic/mnemonic';
+import { hmac_sha512, mnemonicValidate } from '@ton/crypto';
+import { bytesToMnemonics, mnemonicToEntropy } from '@ton/crypto/dist/mnemonic/mnemonic';
 import { TonAccount } from './ton-account';
 
 export class TonAccountsProvider extends AccountsProvider {
