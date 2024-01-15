@@ -1,18 +1,17 @@
-import { Account } from '../account';
-import { HDAccount } from 'viem/accounts';
+import { ethers } from 'ethers';
 
-export class EthAccount extends Account {
+export class EthAccount {
+    get privateKey(): string {
+        return this.hdAccount.privateKey;
+    }
+
+    get publicKey(): string {
+        return this.hdAccount.publicKey;
+    }
+
     get address(): string {
-        return this.account.address;
+        return this.hdAccount.address;
     }
 
-    readonly privateKey: string;
-
-    readonly publicKey: string;
-
-    constructor(public readonly mnemonics: string[], public readonly account: HDAccount) {
-        super();
-        this.privateKey = '0x' + Buffer.from(this.account.getHdKey().privateKey!).toString('hex');
-        this.publicKey = '0x' + Buffer.from(this.account.getHdKey().publicKey!).toString('hex');
-    }
+    constructor(readonly hdAccount: ethers.HDNodeWallet) {}
 }

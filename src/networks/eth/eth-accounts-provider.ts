@@ -1,30 +1,33 @@
-import { AccountsProvider } from '../accounts-provider';
 import { EthAccount } from './eth-account';
-import { mnemonicToAccount } from 'viem/accounts';
 import { entropyToMnemonic } from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { hmac } from '@noble/hashes/hmac';
 import { sha256 } from '@noble/hashes/sha256';
+import { ethers } from 'ethers';
 
-export class EthAccountsProvider extends AccountsProvider {
+export class EthAccountsProvider {
     static MNEMONICS_WORDS_NUMBER = 12;
 
     private static CHECKSUM_BITS = 4;
 
-    private static readonly DERIVATION_PATH = "m/44'/60'/0'/0" as const;
+    private static readonly BASE_DERIVATION_PATH = "m/44'/60'/0'/0" as const;
 
     private static readonly NETWORK_LABEL = 'eth-0x1_root';
 
-    static async fromEntropy(entropy: Buffer): Promise<EthAccountsProvider> {
+    static fromEntropy(entropy: Buffer): EthAccountsProvider {
         const networkEntropy = this.patchEntropy(entropy);
         const mnemonics = entropyToMnemonic(networkEntropy, wordlist);
-        const hdAccount = mnemonicToAccount(mnemonics, { path: this.getDerivationPath(0) });
-        const ethAccount = new EthAccount(mnemonics.split(' '), hdAccount);
-        return new EthAccountsProvider(ethAccount);
+        const hdAccount = ethers.HDNodeWallet.fromPhrase(
+            mnemonics,
+            undefined,
+            this.BASE_DERIVATION_PATH
+        );
+
+        return new EthAccountsProvider(mnemonics.split(' '), hdAccount);
     }
 
-    private static getDerivationPath(index: number): `m/44'/60'/0'/0/${number}` {
-        return `${this.DERIVATION_PATH}/${index}`;
+    getAccount(index: number = 0): EthAccount {
+        return new EthAccount(this.hdAccount.deriveChild(index));
     }
 
     private static patchEntropy(seed: Buffer): Uint8Array {
@@ -35,7 +38,5 @@ export class EthAccountsProvider extends AccountsProvider {
         );
     }
 
-    private constructor(public readonly rootAccount: EthAccount) {
-        super();
-    }
+    private constructor(readonly mnemonics: string[], readonly hdAccount: ethers.HDNodeWallet) {}
 }
