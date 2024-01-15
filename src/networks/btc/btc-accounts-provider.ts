@@ -38,12 +38,9 @@ export class BtcAccountsProvider {
     }
 
     public getAccount(account: number): BtcAccount {
-        const childNode = this.rootNode.deriveHardened(account).derive(0);
+        const childNode = this.rootBip32Node.deriveHardened(account).derive(0);
         return new BtcAccount(childNode);
     }
 
-    private constructor(
-        public readonly mnemonics: string[],
-        private readonly rootNode: BIP32Interface
-    ) {}
+    private constructor(readonly mnemonics: string[], readonly rootBip32Node: BIP32Interface) {}
 }
