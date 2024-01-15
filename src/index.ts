@@ -50,22 +50,22 @@ async function main(mnemonics: string, options: { tonaccs: string; btcaccs: stri
 
     console.log('\n-----------------------------------------------------\n');
 
-    const ethProvider = await EthAccountsProvider.fromEntropy(entropy);
-    const ethAcc = ethProvider.rootAccount;
+    const ethProvider = EthAccountsProvider.fromEntropy(entropy);
+    const ethAccount = ethProvider.getAccount();
 
     console.log(`Eth account`);
-    console.log('Address: ', ethAcc.address);
-    console.log(ethAcc.mnemonics.join(' '));
-    console.log('Private key:', ethAcc.privateKey);
-    console.log('Public key:', ethAcc.publicKey);
+    console.log('Address: ', ethAccount.address);
+    console.log(ethProvider.mnemonics.join(' '));
+    console.log('Private key:', ethAccount.privateKey);
+    console.log('Public key:', ethAccount.publicKey);
     console.log('-----------------------------------------------------\n');
 
-    const trxProvider = await TrxAccountsProvider.fromEntropy(entropy);
-    const trxAccount = trxProvider.rootAccount;
+    const trxProvider = TrxAccountsProvider.fromEntropy(entropy);
+    const trxAccount = trxProvider.getAccount();
 
     console.log(`Trx account`);
     console.log('Address: ', trxAccount.address);
-    console.log(trxAccount.mnemonics.join(' '));
+    console.log(trxProvider.mnemonics.join(' '));
     console.log('Private key:', trxAccount.privateKey);
     console.log('Public key:', trxAccount.publicKey);
     console.log('-----------------------------------------------------\n');

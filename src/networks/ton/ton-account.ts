@@ -1,8 +1,7 @@
-import { Account } from '../account';
 import { mnemonicToPrivateKey } from '@ton/crypto';
 import { Address, WalletContractV4 } from '@ton/ton';
 
-export class TonAccount extends Account {
+export class TonAccount {
     /**
      * Wallet w4r2 address
      */
@@ -22,7 +21,6 @@ export class TonAccount extends Account {
         public readonly privateKey: string,
         public readonly publicKey: string
     ) {
-        super();
         let workchain = 0;
         const wallet = WalletContractV4.create({
             workchain,

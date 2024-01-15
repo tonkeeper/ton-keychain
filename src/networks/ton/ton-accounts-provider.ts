@@ -1,10 +1,9 @@
-import { AccountsProvider } from '../accounts-provider';
 import { hmac_sha256 } from './utils';
 import { hmac_sha512, mnemonicValidate } from '@ton/crypto';
 import { bytesToMnemonics, mnemonicToEntropy } from '@ton/crypto/dist/mnemonic/mnemonic';
 import { TonAccount } from './ton-account';
 
-export class TonAccountsProvider extends AccountsProvider {
+export class TonAccountsProvider {
     static async fromSeed(seed: Buffer): Promise<TonAccountsProvider> {
         const mnemonics = bytesToMnemonics(seed, this.MNEMONICS_WORDS_NUMBER);
         return this.fromMnemonics(mnemonics);
@@ -17,9 +16,7 @@ export class TonAccountsProvider extends AccountsProvider {
 
     static MNEMONICS_WORDS_NUMBER = 24;
 
-    private constructor(readonly rootAccount: TonAccount) {
-        super();
-    }
+    private constructor(readonly rootAccount: TonAccount) {}
 
     public async generateChildAccount(label: string): Promise<TonAccount> {
         const rootEntropy = await mnemonicToEntropy(this.rootAccount.mnemonics);

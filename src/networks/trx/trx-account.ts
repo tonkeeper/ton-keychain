@@ -1,24 +1,22 @@
-import { Account } from '../account';
 import { ethers } from 'ethers';
 import { TronAddress } from './utils';
 
-export class TrxAccount extends Account {
+export class TrxAccount {
     get hexAddress(): string {
-        return this.account.address;
+        return this.hdAccount.address;
     }
 
     get privateKey(): string {
-        return this.account.privateKey;
+        return this.hdAccount.privateKey;
     }
 
     get publicKey(): string {
-        return this.account.publicKey;
+        return this.hdAccount.publicKey;
     }
 
     readonly address: string;
 
-    constructor(public readonly mnemonics: string[], public readonly account: ethers.HDNodeWallet) {
-        super();
+    constructor(readonly hdAccount: ethers.HDNodeWallet) {
         this.address = TronAddress.hexToBase58(this.hexAddress);
     }
 }

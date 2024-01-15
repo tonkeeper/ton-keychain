@@ -1,4 +1,3 @@
-import { AccountsProvider } from '../accounts-provider';
 import { entropyToMnemonic } from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { hmac } from '@noble/hashes/hmac';
@@ -6,30 +5,25 @@ import { sha256 } from '@noble/hashes/sha256';
 import { TrxAccount } from './trx-account';
 import { ethers } from 'ethers';
 
-export class TrxAccountsProvider extends AccountsProvider {
+export class TrxAccountsProvider {
     static MNEMONICS_WORDS_NUMBER = 12;
 
     private static CHECKSUM_BITS = 4;
 
-    private static readonly DERIVATION_PATH = "m/44'/195'/0'/0" as const;
+    private static readonly BASE_DERIVATION_PATH = "m/44'/195'/0'/0" as const;
 
     private static readonly NETWORK_LABEL = 'trx-0x2b6653dc_root';
 
-    static async fromEntropy(entropy: Buffer): Promise<TrxAccountsProvider> {
+    static fromEntropy(entropy: Buffer): TrxAccountsProvider {
         const networkEntropy = this.patchEntropy(entropy);
         const mnemonics = entropyToMnemonic(networkEntropy, wordlist);
         const hdAccount = ethers.HDNodeWallet.fromPhrase(
             mnemonics,
             undefined,
-            this.getDerivationPath(0)
+            this.BASE_DERIVATION_PATH
         );
 
-        const trxAccount = new TrxAccount(mnemonics.split(' '), hdAccount);
-        return new TrxAccountsProvider(trxAccount);
-    }
-
-    private static getDerivationPath(index: number): `m/44'/195'/0'/0/${number}` {
-        return `${this.DERIVATION_PATH}/${index}`;
+        return new TrxAccountsProvider(mnemonics.split(' '), hdAccount);
     }
 
     private static patchEntropy(seed: Buffer): Uint8Array {
@@ -40,7 +34,9 @@ export class TrxAccountsProvider extends AccountsProvider {
         );
     }
 
-    private constructor(public readonly rootAccount: TrxAccount) {
-        super();
+    public getAccount(index: number = 0): TrxAccount {
+        return new TrxAccount(this.hdAccount.deriveChild(index));
     }
+
+    private constructor(readonly mnemonics: string[], readonly hdAccount: ethers.HDNodeWallet) {}
 }
