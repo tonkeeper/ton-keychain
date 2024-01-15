@@ -13,15 +13,11 @@ program
     .argument('<mnemonics>', '24 words ton root mnemonics')
     .option('-t, --tonaccs <tonaccs>', 'Number of the ton accounts to generate', '5')
     .option('-b, --btcaccs <btcaccs>', 'Number of the btc addresses to generate', '5')
-    .option('-s, --segwit', 'Use segwit address type instead of legacy')
     .action(main);
 
 program.parse();
 
-async function main(
-    mnemonics: string,
-    options: { tonaccs: string; btcaccs: string; segwit: boolean }
-) {
+async function main(mnemonics: string, options: { tonaccs: string; btcaccs: string }) {
     const mnemonicsArr = mnemonics.split(' ').filter(Boolean);
     if (mnemonicsArr.length !== 24) {
         throw new Error('Wrong mnemonics format: should be 24 words separated by spaces');
@@ -74,21 +70,17 @@ async function main(
     console.log('Public key:', trxAccount.publicKey);
     console.log('-----------------------------------------------------\n');
 
-    const addressType = options.segwit ? 'segwit' : 'legacy';
-    const btcProvider = await BtcAccountsProvider.fromEntropy(entropy, addressType);
-    const btcAccount = btcProvider.rootAccount;
-
-    console.log(`Btc root account`);
-    console.log(btcAccount.address);
-    console.log(btcAccount.mnemonics.join(' '));
-    console.log('Private key:', btcAccount.privateKey);
-    console.log('Public key:', btcAccount.publicKey);
-    console.log('--');
+    const btcProvider = BtcAccountsProvider.fromEntropy(entropy);
+    console.log('Btc mnemonics: ', btcProvider.mnemonics.join(' '));
+    const btcAccount = btcProvider.getAccount(0);
 
     for (let i = 0; i < Number(options.btcaccs); i++) {
-        const btcAcc = btcProvider.generateChildAccount(0, i, addressType);
-        console.log(`Btc address #${i + 1}`);
-        console.log(btcAcc.address);
+        const btcRecipient = btcAccount.getRecipient();
+        console.log(`Btc address #${i}`);
+        console.log('Address legacy: ', btcRecipient.legacyAddress);
+        console.log('Address segwit: ', btcRecipient.segwitAddress);
+        console.log('Private key: ', btcRecipient.privateKey);
+        console.log('Public key: ', btcRecipient.publicKey);
         console.log('--\n');
     }
 }
