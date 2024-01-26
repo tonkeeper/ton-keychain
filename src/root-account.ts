@@ -41,7 +41,7 @@ export class RootAccount {
 
     private static async isValidMnemonic(mnemonic: string[]) {
         const mnemonicHash = await hmac_sha512('Ton Keychain', mnemonic.join(' '));
-        const result = await pbkdf2_sha512(mnemonicHash, 'TON root fast seed version', 1, 64);
+        const result = await pbkdf2_sha512(mnemonicHash, 'TON root seed version', 1, 64);
         return result[0] === 0;
     }
 
