@@ -2,7 +2,7 @@
 
 ## Root account
 1. Get menmonic (securely random 24 words/user's input)
-2. Check that `pbkdf2_sha512(hmac_sha512('Ton Keychain', mnemonic), 'TON root fast seed version', 1, 64)` first byte is 0 (mnemonic is compatible with tonkeeper root)
+2. Check that `pbkdf2_sha512(hmac_sha512('Ton Keychain', mnemonic), 'TON root seed version', 1, 64)` first byte is 0 (mnemonic is compatible with tonkeeper root)
     - If it is a mnemonic generation process and first byte check fails, go back to the step 1 and pick another random words
 3. Calculate ID  
    - calculate root hash `hmac_sha256('Root ID', mnemonic)` and get first 16 bytes of it
@@ -23,9 +23,17 @@
 - neither root account, nor other child ton accounts, or it's other chains accounts can be found; 
 Schema:
 ```
-Root -> ton_child_1 -> ton_child2 
-        |   |    |     |   |    |
-       eth tron btc   eth tron btc
+root
+├─ ton_child_1
+│  ├─ eth
+│  ├─ tron
+│  ├─ btc
+│
+├─ ton_child_2
+   ├─ eth
+   ├─ tron
+   ├─ btc
+
 ```
 
 ### ETH wallet
