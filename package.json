@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "run": "ts-node src/index.ts -m 'solid tag else struggle frost rubber math sail bullet luxury human goat fade sustain when pencil can soul drama shine north expect become sketch'",
     "build": "tsc",
     "test": "jest"
   },

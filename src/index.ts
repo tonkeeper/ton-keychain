@@ -1,54 +1,57 @@
-import { mnemonicToEntropy } from '@ton/crypto/dist/mnemonic/mnemonic';
-import { TonAccountsProvider } from './networks/ton/ton-accounts-provider';
 import { EthAccountsProvider } from './networks/eth/eth-accounts-provider';
 import { TrxAccountsProvider } from './networks/trx/trx-accounts-provider';
 import { Command } from 'commander';
 import { BtcAccountsProvider } from './networks/btc/btc-accounts-provider';
+import { RootAccount } from './root-account';
+import { TonAccount } from './networks/ton/ton-account';
 
 const program = new Command();
 program
     .name('tonkeeper-address-generator')
     .description('Generate ton, eth, trx, btc accounts from ton mnemonics')
-    .version('0.0.1')
-    .argument('<mnemonics>', '24 words ton root mnemonics')
-    .option('-t, --tonaccs <tonaccs>', 'Number of the ton accounts to generate', '5')
-    .option('-b, --btcaccs <btcaccs>', 'Number of the btc addresses to generate', '5')
+    .version('0.0.2')
+    .option('-m, --mnemonic <mnemonic>', '24 words ton root mnemonics')
+    .option('-a, --accs <tonaccs>', 'Number of the accounts to generate', '5')
+    .option('-b, --btcaddrs <btcaccs>', 'Number of the btc addresses to generate', '2')
     .action(main);
 
 program.parse();
 
-async function main(mnemonics: string, options: { tonaccs: string; btcaccs: string }) {
-    const mnemonicsArr = mnemonics.split(' ').filter(Boolean);
-    if (mnemonicsArr.length !== 24) {
-        throw new Error('Wrong mnemonics format: should be 24 words separated by spaces');
+async function main(options: { accs: string; btcaddrs: string; mnemonic: string }) {
+    let rootAccount: RootAccount;
+    if (options.mnemonic) {
+        const mnemonic = options.mnemonic.split(' ');
+        if (mnemonic.length !== 24) {
+            throw new Error('Wrong mnemonics format: should be 24 words separated by spaces');
+        }
+        rootAccount = await RootAccount.fromMnemonic(mnemonic);
+    } else {
+        rootAccount = await RootAccount.generate();
     }
-    const tonAccountsNumber = Number(options.tonaccs);
-    const entropy = await mnemonicToEntropy(mnemonicsArr);
-    const tonAccountsProvider = await TonAccountsProvider.fromMnemonics(mnemonicsArr);
 
-    console.log('Ton root account');
-    console.log(
-        `Address w4: ${tonAccountsProvider.rootAccount.address.toString({ bounceable: false })}`
-    );
-    console.log(tonAccountsProvider.rootAccount.mnemonics.join(' '));
-    console.log('Private key:', tonAccountsProvider.rootAccount.privateKey);
-    console.log('Public key:', tonAccountsProvider.rootAccount.publicKey);
-    const children = await Promise.all(
-        [...new Array(tonAccountsNumber)].map((_, i) =>
-            tonAccountsProvider.generateChildAccount(i.toString())
-        )
-    );
+    console.log('ROOT ACC');
+    console.log(rootAccount.mnemonic.join(' '));
+    console.log('ID: ', rootAccount.id);
+    console.log('—————————————————————————————————————————————\n');
 
-    children.forEach((tonAcc, index) => {
-        console.log('--\n');
-        console.log(`Ton child account #${index + 1}`);
-        console.log(`Address w4: ${tonAcc.address.toString({ bounceable: false })}`);
-        console.log(tonAcc.mnemonics.join(' '));
-        console.log('Private key:', tonAcc.privateKey);
-        console.log('Public key:', tonAcc.publicKey);
+    const accountsNumber = Number(options.accs);
+    const childTonAccs = await Promise.all(
+        [...new Array(accountsNumber)].map(rootAccount.getTonAccount)
+    );
+    childTonAccs.forEach((acc, index) => {
+        console.log(`Ton Account #${index}`);
+        generateAllChainAccsByTonAcc(acc, { btcaddrs: Number(options.btcaddrs) });
+        console.log('----------------------------------------------------------------------------');
     });
+}
+function generateAllChainAccsByTonAcc(tonAccount: TonAccount, options: { btcaddrs: number }) {
+    const entropy = tonAccount.entropy;
+    console.log(`Address w4: ${tonAccount.address.toString({ bounceable: false })}`);
+    console.log(tonAccount.mnemonics.join(' '));
+    console.log('Private key:', tonAccount.privateKey);
+    console.log('Public key:', tonAccount.publicKey);
 
-    console.log('\n-----------------------------------------------------\n');
+    console.log('\n------\n');
 
     const ethProvider = EthAccountsProvider.fromEntropy(entropy);
     const ethAccount = ethProvider.getAccount();
@@ -58,7 +61,7 @@ async function main(mnemonics: string, options: { tonaccs: string; btcaccs: stri
     console.log(ethProvider.mnemonics.join(' '));
     console.log('Private key:', ethAccount.privateKey);
     console.log('Public key:', ethAccount.publicKey);
-    console.log('-----------------------------------------------------\n');
+    console.log('------\n');
 
     const trxProvider = TrxAccountsProvider.fromEntropy(entropy);
     const trxAccount = trxProvider.getAccount();
@@ -68,13 +71,13 @@ async function main(mnemonics: string, options: { tonaccs: string; btcaccs: stri
     console.log(trxProvider.mnemonics.join(' '));
     console.log('Private key:', trxAccount.privateKey);
     console.log('Public key:', trxAccount.publicKey);
-    console.log('-----------------------------------------------------\n');
+    console.log('------\n');
 
     const btcProvider = BtcAccountsProvider.fromEntropy(entropy);
     console.log('Btc mnemonics: ', btcProvider.mnemonics.join(' '));
     const btcAccount = btcProvider.getAccount(0);
 
-    for (let i = 0; i < Number(options.btcaccs); i++) {
+    for (let i = 0; i < options.btcaddrs; i++) {
         const btcRecipient = btcAccount.getRecipient();
         console.log(`Btc address #${i}`);
         console.log('Address legacy: ', btcRecipient.legacyAddress);
