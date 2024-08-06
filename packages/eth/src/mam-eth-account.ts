@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-export class EthAccount {
+export class MamEthAccount {
     get privateKey(): string {
         return this.hdAccount.privateKey;
     }

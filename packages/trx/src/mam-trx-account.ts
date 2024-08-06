@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { TronAddress } from './utils';
 
-export class TrxAccount {
+export class MamTrxAccount {
     get hexAddress(): string {
         return this.hdAccount.address;
     }

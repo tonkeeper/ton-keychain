@@ -1,10 +1,10 @@
 import { getSecureRandomNumber, hmac_sha512, mnemonicValidate, pbkdf2_sha512 } from '@ton/crypto';
 import { wordlist } from '@scure/bip39/wordlists/english';
-import { hmac_sha256 } from './networks/ton/utils';
-import { TonAccount } from './networks/ton/ton-account';
+import { hmac_sha256 } from './utils';
+import { MamTonAccount } from './mam-ton-account';
 import { bytesToMnemonics, mnemonicToEntropy } from '@ton/crypto/dist/mnemonic/mnemonic';
 
-export class RootAccount {
+export class MamRoot {
     private static ID_PREFIX = 0b0010100000101101; // base64 "KC" + 1101 constant
 
     static async generate(wordsCount: number = 24) {
@@ -36,7 +36,7 @@ export class RootAccount {
             throw new Error('Mnemonic is not compatible with Tonkeeper Root account recovery');
         }
         const id = await this.calculateId(mnemonic);
-        return new RootAccount(mnemonic, id);
+        return new MamRoot(mnemonic, id);
     }
 
     private static async isValidMnemonic(mnemonic: string[]) {
@@ -57,11 +57,11 @@ export class RootAccount {
 
     private constructor(readonly mnemonic: string[], readonly id: string) {}
 
-    public getTonAccount = async (index: number): Promise<TonAccount> => {
+    public getTonAccount = async (index: number): Promise<MamTonAccount> => {
         const rootEntropy = await mnemonicToEntropy(this.mnemonic);
         const childEntropy = await hmac_sha256(this.ACCOUNT_LABEL(index), rootEntropy);
         const { mnemonics } = await this.entropyToTonCompatibleSeed(childEntropy);
-        return TonAccount.fromMnemonics(mnemonics);
+        return MamTonAccount.fromMnemonics(mnemonics);
     };
 
     private async entropyToTonCompatibleSeed(
@@ -79,9 +79,9 @@ export class RootAccount {
             const iterationEntropy = await hmac_sha512(hmacData, entropy);
             const iterationSeed = iterationEntropy.subarray(
                 0,
-                (TonAccount.MNEMONICS_WORDS_NUMBER * 11) / 8
+                (MamTonAccount.MNEMONICS_WORDS_NUMBER * 11) / 8
             );
-            const mnemonics = bytesToMnemonics(iterationSeed, TonAccount.MNEMONICS_WORDS_NUMBER);
+            const mnemonics = bytesToMnemonics(iterationSeed, MamTonAccount.MNEMONICS_WORDS_NUMBER);
 
             if (await mnemonicValidate(mnemonics)) {
                 return { seed: iterationSeed, mnemonics };

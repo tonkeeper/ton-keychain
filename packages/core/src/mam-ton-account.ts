@@ -1,21 +1,15 @@
 import { mnemonicToPrivateKey } from '@ton/crypto';
-import { Address, WalletContractV4 } from '@ton/ton';
 import { mnemonicToEntropy } from '@ton/crypto/dist/mnemonic/mnemonic';
 
-export class TonAccount {
-    /**
-     * Wallet w4r2 address
-     */
-    readonly address: Address;
-
+export class MamTonAccount {
     static MNEMONICS_WORDS_NUMBER = 24;
 
-    static async fromMnemonics(mnemonics: string[]): Promise<TonAccount> {
+    static async fromMnemonics(mnemonics: string[]): Promise<MamTonAccount> {
         const [keypair, entropy] = await Promise.all([
             mnemonicToPrivateKey(mnemonics),
             mnemonicToEntropy(mnemonics)
         ]);
-        return new TonAccount(
+        return new MamTonAccount(
             mnemonics,
             '0x' + keypair.secretKey.toString('hex'),
             '0x' + keypair.publicKey.toString('hex'),
@@ -28,13 +22,5 @@ export class TonAccount {
         public readonly privateKey: string,
         public readonly publicKey: string,
         public readonly entropy: Buffer
-    ) {
-        let workchain = 0;
-        const wallet = WalletContractV4.create({
-            workchain,
-            publicKey: Buffer.from(publicKey.slice(2), 'hex')
-        });
-
-        this.address = wallet.address;
-    }
+    ) {}
 }

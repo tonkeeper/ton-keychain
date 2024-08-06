@@ -1,0 +1,54 @@
+{
+  "name": "@multi-account-mnemonic/btc",
+  "version": "0.0.1",
+  "description": "SDK for creating multi account mnemonics, plugin for bitcoin",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup && npx rimraf ./dist/index.d.mts",
+    "test": "jest"
+  },
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "TODO"
+  },
+  "homepage": "TODO",
+  "repository": {
+    "type": "git",
+    "url": "git+TODO"
+  },
+  "keywords": [
+    "TON",
+    "Blockchain",
+    "Mnemonic",
+    "Account",
+    "Bitcoin"
+  ],
+  "author": "Ton Apps",
+  "authors": [
+    {
+      "name": "siandreev",
+      "url": "https://github.com/siandreev"
+    }
+  ],
+  "dependencies": {
+    "@multi-account-mnemonic/core": "workspace:^0.0.1",
+    "@noble/hashes": "^1.3.3",
+    "@scure/bip39": "^1.2.2",
+    "bip32": "^4.0.0",
+    "bitcoinjs-lib": "^6.1.5",
+    "tiny-secp256k1": "^2.2.3"
+  }
+}
