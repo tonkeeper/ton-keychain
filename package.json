@@ -1,7 +1,6 @@
 {
   "name": "multi-account-mnemonic",
   "private": true,
-  "type": "module",
   "scripts": {
     "build": "tsup && npx rimraf ./dist/index.d.mts",
     "test": "vitest run"

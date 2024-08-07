@@ -6,7 +6,7 @@
     - If it is a mnemonic generation process and first byte check fails, go back to the step 1 and pick another random words
 3. Calculate ID  
    - calculate root hash `hmac_sha256('Root ID', mnemonic)` and get first 16 bytes of it
-   - ID = `base64url_encode(0x282d ++ root_hash)`
+   - ID = `base64url_encode(0x3003 ++ root_hash)`
 
 ## TON child account
 1. Calculate child entropy using `hmac_sha256` of the `"serial:<index>"` (utf-8 string) and parent's entropy

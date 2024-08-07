@@ -1,7 +1,6 @@
 {
   "name": "@multi-account-mnemonic/eth",
   "version": "0.0.1",
-  "type": "module",
   "description": "SDK for creating multi account mnemonics, plugin for ethereum",
   "files": [
     "dist"

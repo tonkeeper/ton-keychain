@@ -3,8 +3,7 @@
 [Specification](SPECIFICATION.md)
 
 ## Getting started
-- `npm i`
-- `npm run build`
+- `yarn`
 
 ## Run tests
-- `npm run test`
+- `yarn run test`
