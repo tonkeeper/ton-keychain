@@ -50,7 +50,10 @@ export class MamRoot {
         const prefix = Buffer.alloc(2);
         prefix.writeUint16BE(this.ID_PREFIX);
 
-        return Buffer.concat([prefix, id.subarray(0, 16)]).toString('base64url');
+        return Buffer.concat([prefix, id.subarray(0, 16)])
+            .toString('base64')
+            .replaceAll('+', '-')
+            .replaceAll('/', '_');
     }
 
     private ACCOUNT_LABEL = (n: number) => `serial:${n}`;

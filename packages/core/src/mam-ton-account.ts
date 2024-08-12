@@ -11,8 +11,8 @@ export class MamTonAccount {
         ]);
         return new MamTonAccount(
             mnemonics,
-            '0x' + keypair.secretKey.toString('hex'),
-            '0x' + keypair.publicKey.toString('hex'),
+            keypair.secretKey.toString('hex'),
+            keypair.publicKey.toString('hex'),
             entropy
         );
     }
