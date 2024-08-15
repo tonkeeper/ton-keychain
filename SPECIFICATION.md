@@ -7,9 +7,20 @@
 3. Calculate ID  
    - calculate root hash `hmac_sha256('Keychain ID', mnemonic)` and get first 16 bytes of it
    - ID = `base64url_encode(0x3003 ++ root_hash)`
+   - 
+## Sub-keychain account
+In order to generate deeply nested hierarchies of wallets, one needs to generate nested keychain mnemonics accounts.
+
+1. Calculate child entropy using `hmac_sha256` of the `"keychain:<index>"` (utf-8 string) and parent's (root-account) entropy (`hmac_sha512(root_mnemonic_array.join(' '), '')`).
+2. Iterate `seqno` from 0 to 2^32 - 1
+3. Calculate hmac_sha512 hash `iteration_entropy` of the given seqno and entropy, stored as a 32bit be uint
+4. Slice first 264 bits of the `iteration_entropy` and store as `iteration_seed`
+5. Get mnemonic `iteration_mnemonic` by 264-bit `iteration_seed`
+6. Check that `pbkdf2_sha512(hmac_sha512('TON Keychain', mnemonic), 'TON Keychain Version', 1, 64)` first byte is 0 (mnemonic is compatible with TON Keychain Mnemonic)
+7. Break the cycle and return `iteration_mnemonic` (or `iteration_seed`) if check is passed
 
 ## TON child account
-1. Calculate child entropy using `hmac_sha256` of the `"account:<index>"` (utf-8 string) and parent's entropy.
+1. Calculate child entropy using `hmac_sha256` of the `"account:<index>"` (utf-8 string) and parent's (root-account or sub-keychain-account) entropy (`hmac_sha512(root_mnemonic_array.join(' '), '')`).
 2. Iterate `seqno` from 0 to 2^32 - 1
 3. Calculate hmac_sha512 hash `iteration_entropy` of the given seqno and entropy, stored as a 32bit be uint
 4. Slice first 264 bits of the `iteration_entropy` and store as `iteration_seed`
@@ -17,17 +28,6 @@
 6. Check that `pbkdf2_sha512(hmac_sha512(child_seed, ''), 'TON fast seed version', 1, 64)` first byte is 0 (mnemonic is compatible with TON Account Mnemonic)
 7. Break the cycle and return `iteration_mnemonic` (or `iteration_seed`) if check is passed
 
-## TON sub-keychain mnemonic
-
-In order to generate deeply nested hierarchies of wallets, one needs to generate nested TON Keychain mnemonics.
-
-1. Calculate child entropy using `hmac_sha256` of the `"keychain:<index>"` (utf-8 string) and parent's entropy.
-2. Iterate `seqno` from 0 to 2^32 - 1
-3. Calculate hmac_sha512 hash `iteration_entropy` of the given seqno and entropy, stored as a 32bit be uint
-4. Slice first 264 bits of the `iteration_entropy` and store as `iteration_seed`
-5. Get mnemonic `iteration_mnemonic` by 264-bit `iteration_seed`
-6. Check that `pbkdf2_sha512(hmac_sha512('TON Keychain', mnemonic), 'TON Keychain Version', 1, 64)` first byte is 0 (mnemonic is compatible with TON Keychain Mnemonic)
-7. Break the cycle and return `iteration_mnemonic` (or `iteration_seed`) if check is passed
 
 **For given TON child account we are calculating corresponding ETH, TRON and BTC accounts**. Thus, if there is a ton child account mnemonics,
 - corresponding accounts for other chains can be deterministically computed;
