@@ -47,6 +47,7 @@ describe('Multi accounts mnemonic tests', () => {
         const tonAccountClone = await getNthAccountTon(rootAccount.mnemonic, 239);
 
         expect(tonAccount.mnemonics).toEqual(tonAccountClone.mnemonics);
+        expect(await mnemonicValidate(tonAccountClone.mnemonics)).toBeTruthy();
     });
 
     it('Root acc ID should start with MAM', async () => {
@@ -61,5 +62,47 @@ describe('Multi accounts mnemonic tests', () => {
 
         expect(rootAccount1.id).not.toBe(rootAccount2.id);
         expect(rootAccount1.mnemonic).not.toEqual(rootAccount2.mnemonic);
+    });
+
+    it('Should calculate sub root accounts', async () => {
+        const rootAccount1 = await MamRoot.generate();
+        const rootAccount2 = await MamRoot.generate();
+
+        const subRoot1_1 = await rootAccount1.getSubRootAccount(1);
+        const subRoot1_2 = await rootAccount1.getSubRootAccount(2);
+        const subRoot2_1 = await rootAccount2.getSubRootAccount(1);
+        const subRoot2_2 = await rootAccount2.getSubRootAccount(2);
+
+        expect(await MamRoot.isValidMnemonic(subRoot1_1.mnemonic)).toBeTruthy();
+        expect(await MamRoot.isValidMnemonic(subRoot1_2.mnemonic)).toBeTruthy();
+        expect(await MamRoot.isValidMnemonic(subRoot2_1.mnemonic)).toBeTruthy();
+        expect(await MamRoot.isValidMnemonic(subRoot2_2.mnemonic)).toBeTruthy();
+
+        const mnemonics = new Set([
+            rootAccount1.mnemonic.join(' '),
+            rootAccount2.mnemonic.join(' '),
+            subRoot1_1.mnemonic.join(' '),
+            subRoot1_2.mnemonic.join(' '),
+            subRoot2_1.mnemonic.join(' '),
+            subRoot2_2.mnemonic.join(' ')
+        ]);
+
+        expect(mnemonics.size).toBe(6);
+    });
+
+    it('Sub root accounts calculations are determined', async () => {
+        const rootAccount = await MamRoot.generate();
+        const subRoot1 = await rootAccount.getSubRootAccount(30);
+        const subRoot2 = await rootAccount.getSubRootAccount(239);
+        const subRoot3 = await rootAccount.getSubRootAccount(366);
+
+        const rootAccount_clone = await MamRoot.fromMnemonic(rootAccount.mnemonic);
+        const subRoot2_clone = await rootAccount_clone.getSubRootAccount(239);
+        const subRoot1_clone = await rootAccount_clone.getSubRootAccount(30);
+        const subRoot3_clone = await rootAccount_clone.getSubRootAccount(366);
+
+        expect(subRoot1.mnemonic).toEqual(subRoot1_clone.mnemonic);
+        expect(subRoot2.mnemonic).toEqual(subRoot2_clone.mnemonic);
+        expect(subRoot3.mnemonic).toEqual(subRoot3_clone.mnemonic);
     });
 });
