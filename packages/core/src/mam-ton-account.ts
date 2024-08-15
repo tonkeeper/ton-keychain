@@ -4,7 +4,7 @@ import { mnemonicToEntropy } from '@ton/crypto/dist/mnemonic/mnemonic';
 export class MamTonAccount {
     static MNEMONICS_WORDS_NUMBER = 24;
 
-    static async fromMnemonics(mnemonics: string[]): Promise<MamTonAccount> {
+    static async fromMnemonic(mnemonics: string[]): Promise<MamTonAccount> {
         const [keypair, entropy] = await Promise.all([
             mnemonicToPrivateKey(mnemonics),
             mnemonicToEntropy(mnemonics)

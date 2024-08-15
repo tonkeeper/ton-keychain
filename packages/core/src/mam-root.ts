@@ -39,14 +39,14 @@ export class MamRoot {
         return new MamRoot(mnemonic, id);
     }
 
-    private static async isValidMnemonic(mnemonic: string[]) {
-        const mnemonicHash = await hmac_sha512('Ton Keychain', mnemonic.join(' '));
-        const result = await pbkdf2_sha512(mnemonicHash, 'TON root seed version', 1, 64);
+    public static async isValidMnemonic(mnemonic: string[]) {
+        const mnemonicHash = await hmac_sha512('TON Keychain', mnemonic.join(' '));
+        const result = await pbkdf2_sha512(mnemonicHash, 'TON Keychain Version', 1, 64);
         return result[0] === 0;
     }
 
     private static async calculateId(mnemonic: string[]) {
-        const id = await hmac_sha256('Root ID', mnemonic.join(' '));
+        const id = await hmac_sha256('Keychain ID', mnemonic.join(' '));
         const prefix = Buffer.alloc(2);
         prefix.writeUint16BE(this.ID_PREFIX);
 
@@ -56,7 +56,9 @@ export class MamRoot {
             .replaceAll('/', '_');
     }
 
-    private ACCOUNT_LABEL = (n: number) => `serial:${n}`;
+    private ACCOUNT_LABEL = (n: number) => `account:${n}`;
+
+    private SUB_ROOT_ACCOUNT_LABEL = (n: number) => `keychain:${n}`;
 
     private constructor(readonly mnemonic: string[], readonly id: string) {}
 
@@ -64,7 +66,14 @@ export class MamRoot {
         const rootEntropy = await mnemonicToEntropy(this.mnemonic);
         const childEntropy = await hmac_sha256(this.ACCOUNT_LABEL(index), rootEntropy);
         const { mnemonics } = await this.entropyToTonCompatibleSeed(childEntropy);
-        return MamTonAccount.fromMnemonics(mnemonics);
+        return MamTonAccount.fromMnemonic(mnemonics);
+    };
+
+    public getSubRootAccount = async (index: number): Promise<MamRoot> => {
+        const rootEntropy = await mnemonicToEntropy(this.mnemonic);
+        const childEntropy = await hmac_sha256(this.SUB_ROOT_ACCOUNT_LABEL(index), rootEntropy);
+        const { mnemonics } = await this.entropyToRootCompatibleSeed(childEntropy);
+        return MamRoot.fromMnemonic(mnemonics);
     };
 
     private async entropyToTonCompatibleSeed(
@@ -87,6 +96,32 @@ export class MamRoot {
             const mnemonics = bytesToMnemonics(iterationSeed, MamTonAccount.MNEMONICS_WORDS_NUMBER);
 
             if (await mnemonicValidate(mnemonics)) {
+                return { seed: iterationSeed, mnemonics };
+            }
+        }
+        throw new Error('Ton mnemonics was not found in 2^32 iterations');
+    }
+
+    private async entropyToRootCompatibleSeed(
+        entropy: Buffer
+    ): Promise<{ seed: Buffer; mnemonics: string[] }> {
+        const SEQNO_SIZE_BYTES = 4;
+
+        // less than 1 of 10^200 probability to not find correct mnemonics
+        const maxSeqno = 0xffffffff; // 2^(SEQNO_SIZE_BYTES * 8) - 1
+        for (let i = 0; i < maxSeqno; i++) {
+            const hmacData = Buffer.alloc(SEQNO_SIZE_BYTES);
+            hmacData.writeUint32BE(i);
+
+            // get 512 bits hash and slice first 264 bits in order to get enough bits for 24 words mnemonics
+            const iterationEntropy = await hmac_sha512(hmacData, entropy);
+            const iterationSeed = iterationEntropy.subarray(
+                0,
+                (MamTonAccount.MNEMONICS_WORDS_NUMBER * 11) / 8
+            );
+            const mnemonics = bytesToMnemonics(iterationSeed, MamTonAccount.MNEMONICS_WORDS_NUMBER);
+
+            if (await MamRoot.isValidMnemonic(mnemonics)) {
                 return { seed: iterationSeed, mnemonics };
             }
         }
