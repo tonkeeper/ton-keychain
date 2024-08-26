@@ -50,10 +50,10 @@ describe('Multi accounts mnemonic tests', () => {
         expect(await mnemonicValidate(tonAccountClone.mnemonics)).toBeTruthy();
     });
 
-    it('Root acc ID should start with MAM', async () => {
+    it('Root acc ID should start with TK', async () => {
         const rootAccount = await MamRoot.generate();
 
-        expect(rootAccount.id.startsWith('MA')).toBeTruthy();
+        expect(rootAccount.id.startsWith('TK')).toBeTruthy();
     });
 
     it('Should generate different root accounts', async () => {

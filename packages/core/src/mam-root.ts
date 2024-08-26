@@ -5,7 +5,7 @@ import { MamTonAccount } from './mam-ton-account';
 import { bytesToMnemonics, mnemonicToEntropy } from '@ton/crypto/dist/mnemonic/mnemonic';
 
 export class MamRoot {
-    private static ID_PREFIX = 0x3003; // base64 "MA"
+    private static ID_PREFIX = 0x4cad; // base64 "TK" + 1101 constant
 
     static async generate(wordsCount: number = 24) {
         let mnemonicArray: string[] = [];
