@@ -1,5 +1,5 @@
 {
-  "name": "@multi-account-mnemonic/core",
+  "name": "@ton-keychain/core",
   "version": "0.0.1",
   "description": "SDK for creating multi account mnemonics",
   "files": [

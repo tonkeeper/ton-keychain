@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { getNthAccountEth } from '../src';
-import { TonKeychainRoot } from '@multi-account-mnemonic/core';
+import { TonKeychainRoot } from '@ton-keychain/core';
 
 describe('Eth plugin tests', () => {
     it('Calculations are determined', async () => {

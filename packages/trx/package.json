@@ -1,5 +1,5 @@
 {
-  "name": "@multi-account-mnemonic/trx",
+  "name": "@ton-keychain/trx",
   "version": "0.0.1",
   "description": "SDK for creating multi account mnemonics, plugin for tron",
   "files": [
@@ -44,9 +44,9 @@
     }
   ],
   "dependencies": {
-    "@multi-account-mnemonic/core": "workspace:^0.0.1",
     "@noble/hashes": "^1.3.3",
     "@scure/bip39": "^1.2.2",
+    "@ton-keychain/core": "workspace:^0.0.1",
     "ethers": "^6.9.2"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "multi-account-mnemonic",
+  "name": "ton-keychain",
   "private": true,
   "scripts": {
     "build": "tsup && npx rimraf ./dist/index.d.mts",

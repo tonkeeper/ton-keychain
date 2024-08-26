@@ -1,4 +1,4 @@
-import { getNthAccountTon } from '@multi-account-mnemonic/core';
+import { getNthAccountTon } from '@ton-keychain/core';
 import { KeychainTrxAccount } from './keychain-trx-account';
 import { KeychainTrxAccountsProvider } from './keychain-trx-accounts-provider';
 

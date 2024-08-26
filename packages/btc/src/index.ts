@@ -1,4 +1,4 @@
-import { getNthAccountTon } from '@multi-account-mnemonic/core';
+import { getNthAccountTon } from '@ton-keychain/core';
 import { KeychainBtcAccountsProvider } from './keychain-btc-accounts-provider';
 
 export { KeychainBtcAccountsProvider } from './keychain-btc-accounts-provider';
