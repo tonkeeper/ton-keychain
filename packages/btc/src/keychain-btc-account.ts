@@ -1,7 +1,7 @@
 import { BIP32Interface } from 'bip32';
 import * as bitcoin from 'bitcoinjs-lib';
 
-export class MamBtcRecipient {
+export class KeychainBtcRecipient {
     get publicKey(): string {
         return '0x' + this.bip32Node.publicKey.toString('hex');
     }
@@ -20,17 +20,17 @@ export class MamBtcRecipient {
     }
 }
 
-export class MamBtcAccount {
+export class KeychainBtcAccount {
     latestAccountIndex = 0;
 
     constructor(readonly bip32Node: BIP32Interface) {}
 
-    public getRecipient(index?: number): MamBtcRecipient {
+    public getRecipient(index?: number): KeychainBtcRecipient {
         if (index === undefined) {
             index = this.latestAccountIndex;
             this.latestAccountIndex++;
         }
 
-        return new MamBtcRecipient(this.bip32Node.derive(index));
+        return new KeychainBtcRecipient(this.bip32Node.derive(index));
     }
 }

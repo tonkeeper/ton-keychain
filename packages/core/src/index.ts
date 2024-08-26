@@ -1,12 +1,12 @@
-import { MamRoot } from './mam-root';
-import { MamTonAccount } from './mam-ton-account';
-export { MamRoot } from './mam-root';
-export { MamTonAccount } from './mam-ton-account';
+import { TonKeychainRoot } from './ton-keychain-root';
+import { KeychainTonAccount } from './keychain-ton-account';
+export { TonKeychainRoot } from './ton-keychain-root';
+export { KeychainTonAccount } from './keychain-ton-account';
 
 export async function getNthAccountTon(
     rootMnemonic: string[],
     childIndex: number
-): Promise<MamTonAccount> {
-    const root = await MamRoot.fromMnemonic(rootMnemonic);
+): Promise<KeychainTonAccount> {
+    const root = await TonKeychainRoot.fromMnemonic(rootMnemonic);
     return root.getTonAccount(childIndex);
 }

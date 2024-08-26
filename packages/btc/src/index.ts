@@ -1,13 +1,13 @@
 import { getNthAccountTon } from '@multi-account-mnemonic/core';
-import { MamBtcAccountsProvider } from './mam-btc-accounts-provider';
+import { KeychainBtcAccountsProvider } from './keychain-btc-accounts-provider';
 
-export { MamBtcAccountsProvider } from './mam-btc-accounts-provider';
-export { MamBtcAccount, MamBtcRecipient } from './mam-btc-account';
+export { KeychainBtcAccountsProvider } from './keychain-btc-accounts-provider';
+export { KeychainBtcAccount, KeychainBtcRecipient } from './keychain-btc-account';
 
 export async function getNthAccountBtcProvider(
     rootMnemonic: string[],
     childIndex: number
-): Promise<MamBtcAccountsProvider> {
+): Promise<KeychainBtcAccountsProvider> {
     const tonAccount = await getNthAccountTon(rootMnemonic, childIndex);
-    return MamBtcAccountsProvider.fromEntropy(tonAccount.entropy);
+    return KeychainBtcAccountsProvider.fromEntropy(tonAccount.entropy);
 }

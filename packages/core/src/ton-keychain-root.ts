@@ -1,10 +1,10 @@
 import { getSecureRandomNumber, hmac_sha512, mnemonicValidate, pbkdf2_sha512 } from '@ton/crypto';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { hmac_sha256 } from './utils';
-import { MamTonAccount } from './mam-ton-account';
+import { KeychainTonAccount } from './keychain-ton-account';
 import { bytesToMnemonics, mnemonicToEntropy } from '@ton/crypto/dist/mnemonic/mnemonic';
 
-export class MamRoot {
+export class TonKeychainRoot {
     private static ID_PREFIX = 0x4cad; // base64 "TK" + 1101 constant
 
     static async generate(wordsCount: number = 24) {
@@ -36,7 +36,7 @@ export class MamRoot {
             throw new Error('Mnemonic is not compatible with Tonkeeper Root account recovery');
         }
         const id = await this.calculateId(mnemonic);
-        return new MamRoot(mnemonic, id);
+        return new TonKeychainRoot(mnemonic, id);
     }
 
     public static async isValidMnemonic(mnemonic: string[]) {
@@ -62,18 +62,18 @@ export class MamRoot {
 
     private constructor(readonly mnemonic: string[], readonly id: string) {}
 
-    public getTonAccount = async (index: number): Promise<MamTonAccount> => {
+    public getTonAccount = async (index: number): Promise<KeychainTonAccount> => {
         const rootEntropy = await mnemonicToEntropy(this.mnemonic);
         const childEntropy = await hmac_sha256(this.ACCOUNT_LABEL(index), rootEntropy);
         const { mnemonics } = await this.entropyToTonCompatibleSeed(childEntropy);
-        return MamTonAccount.fromMnemonic(mnemonics);
+        return KeychainTonAccount.fromMnemonic(mnemonics);
     };
 
-    public getSubRootAccount = async (index: number): Promise<MamRoot> => {
+    public getSubRootAccount = async (index: number): Promise<TonKeychainRoot> => {
         const rootEntropy = await mnemonicToEntropy(this.mnemonic);
         const childEntropy = await hmac_sha256(this.SUB_ROOT_ACCOUNT_LABEL(index), rootEntropy);
         const { mnemonics } = await this.entropyToRootCompatibleSeed(childEntropy);
-        return MamRoot.fromMnemonic(mnemonics);
+        return TonKeychainRoot.fromMnemonic(mnemonics);
     };
 
     private async entropyToTonCompatibleSeed(
@@ -91,9 +91,12 @@ export class MamRoot {
             const iterationEntropy = await hmac_sha512(hmacData, entropy);
             const iterationSeed = iterationEntropy.subarray(
                 0,
-                (MamTonAccount.MNEMONICS_WORDS_NUMBER * 11) / 8
+                (KeychainTonAccount.MNEMONICS_WORDS_NUMBER * 11) / 8
             );
-            const mnemonics = bytesToMnemonics(iterationSeed, MamTonAccount.MNEMONICS_WORDS_NUMBER);
+            const mnemonics = bytesToMnemonics(
+                iterationSeed,
+                KeychainTonAccount.MNEMONICS_WORDS_NUMBER
+            );
 
             if (await mnemonicValidate(mnemonics)) {
                 return { seed: iterationSeed, mnemonics };
@@ -117,11 +120,14 @@ export class MamRoot {
             const iterationEntropy = await hmac_sha512(hmacData, entropy);
             const iterationSeed = iterationEntropy.subarray(
                 0,
-                (MamTonAccount.MNEMONICS_WORDS_NUMBER * 11) / 8
+                (KeychainTonAccount.MNEMONICS_WORDS_NUMBER * 11) / 8
             );
-            const mnemonics = bytesToMnemonics(iterationSeed, MamTonAccount.MNEMONICS_WORDS_NUMBER);
+            const mnemonics = bytesToMnemonics(
+                iterationSeed,
+                KeychainTonAccount.MNEMONICS_WORDS_NUMBER
+            );
 
-            if (await MamRoot.isValidMnemonic(mnemonics)) {
+            if (await TonKeychainRoot.isValidMnemonic(mnemonics)) {
                 return { seed: iterationSeed, mnemonics };
             }
         }
