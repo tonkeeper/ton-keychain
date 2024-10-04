@@ -124,4 +124,21 @@ describe('Multi accounts mnemonic tests', () => {
 
         expect(isKeychainValid).toBeFalsy();
     });
+
+    it("Can't create root account from legacy mnemonic unless flag is passed", async () => {
+        const bothCompatibleLegacyMnemonic =
+            'machine element second curtain pizza ocean era relief flavor alpha kitchen student cat raccoon gown gather lion fuel census avoid inform obtain melody present'.split(
+                ' '
+            );
+
+        await expect(() =>
+            TonKeychainRoot.fromMnemonic(bothCompatibleLegacyMnemonic)
+        ).rejects.toThrowError('Mnemonic is not compatible with Tonkeeper Root account recovery');
+
+        const account = await TonKeychainRoot.fromMnemonic(bothCompatibleLegacyMnemonic, {
+            allowLegacyMnemonic: true
+        });
+
+        expect(account.mnemonic).toBe(bothCompatibleLegacyMnemonic);
+    });
 });

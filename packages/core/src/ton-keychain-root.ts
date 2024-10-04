@@ -30,8 +30,13 @@ export class TonKeychainRoot {
         return this.fromMnemonic(mnemonicArray);
     }
 
-    public static async fromMnemonic(mnemonic: string[]) {
-        const isValid = await this.isValidMnemonic(mnemonic);
+    public static async fromMnemonic(
+        mnemonic: string[],
+        options?: { allowLegacyMnemonic?: boolean }
+    ) {
+        const isValid = options?.allowLegacyMnemonic
+            ? await this.isValidMnemonicLegacy(mnemonic)
+            : await this.isValidMnemonic(mnemonic);
         if (!isValid) {
             throw new Error('Mnemonic is not compatible with Tonkeeper Root account recovery');
         }
