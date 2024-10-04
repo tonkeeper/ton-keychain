@@ -56,7 +56,7 @@ export class TonKeychainRoot {
             return false;
         }
 
-        const isTonCompatible = mnemonicValidate(mnemonic);
+        const isTonCompatible = await mnemonicValidate(mnemonic);
         return !isTonCompatible;
     }
 
