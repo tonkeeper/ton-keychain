@@ -39,10 +39,25 @@ export class TonKeychainRoot {
         return new TonKeychainRoot(mnemonic, id);
     }
 
-    public static async isValidMnemonic(mnemonic: string[]) {
+    /**
+     * @description DANGER
+     * Should only be used to process legacy already created mnemonics
+     * @param mnemonic
+     */
+    public static async isValidMnemonicLegacy(mnemonic: string[]) {
         const mnemonicHash = await hmac_sha512('TON Keychain', mnemonic.join(' '));
         const result = await pbkdf2_sha512(mnemonicHash, 'TON Keychain Version', 1, 64);
         return result[0] === 0;
+    }
+
+    public static async isValidMnemonic(mnemonic: string[]) {
+        const isLegacyValid = await this.isValidMnemonicLegacy(mnemonic);
+        if (!isLegacyValid) {
+            return false;
+        }
+
+        const isTonCompatible = mnemonicValidate(mnemonic);
+        return !isTonCompatible;
     }
 
     private static async calculateId(mnemonic: string[]) {

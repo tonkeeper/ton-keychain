@@ -105,4 +105,23 @@ describe('Multi accounts mnemonic tests', () => {
         expect(subRoot2.mnemonic).toEqual(subRoot2_clone.mnemonic);
         expect(subRoot3.mnemonic).toEqual(subRoot3_clone.mnemonic);
     });
+
+    it('Mnemonic should not be compatible with TON', async () => {
+        const bothCompatibleLegacyMnemonic =
+            'machine element second curtain pizza ocean era relief flavor alpha kitchen student cat raccoon gown gather lion fuel census avoid inform obtain melody present'.split(
+                ' '
+            );
+
+        const isTonCompatible = await mnemonicValidate(bothCompatibleLegacyMnemonic);
+        const isLegacyCompatible = await TonKeychainRoot.isValidMnemonicLegacy(
+            bothCompatibleLegacyMnemonic
+        );
+
+        expect(isTonCompatible).toBeTruthy();
+        expect(isLegacyCompatible).toBeTruthy();
+
+        const isKeychainValid = await TonKeychainRoot.isValidMnemonic(bothCompatibleLegacyMnemonic);
+
+        expect(isKeychainValid).toBeFalsy();
+    });
 });
