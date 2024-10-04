@@ -4,7 +4,9 @@
 1. Get mnemonic (securely random 24 words/user's input)
 2. Check that `pbkdf2_sha512(hmac_sha512('TON Keychain', mnemonic), 'TON Keychain Version', 1, 64)` first byte is 0 (mnemonic is compatible with TON Keychain Mnemonic)
     - If it is a mnemonic generation process and first byte check fails, go back to the step 1 and pick another random words
-3. Calculate ID  
+3. Check that mnemonic is **not** compatible with TON mnemonic
+   - If it is a mnemonic generation process and this check fails, go back to the step 1 and pick another random words
+4. Calculate ID  
    - calculate root hash `hmac_sha256('Keychain ID', mnemonic)` and get first 16 bytes of it
    - ID = `base64url_encode(0x4cad ++ root_hash)`
 ## Sub-keychain account
