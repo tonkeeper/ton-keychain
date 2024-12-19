@@ -4,6 +4,7 @@ import { KeychainTrxAccountsProvider } from './keychain-trx-accounts-provider';
 
 export { KeychainTrxAccountsProvider } from './keychain-trx-accounts-provider';
 export { KeychainTrxAccount } from './keychain-trx-account';
+export { TronAddress as TronAddressUtils } from './utils';
 
 export async function getNthAccountTrx(
     rootMnemonic: string[],
