@@ -8,6 +8,6 @@ export const TronAddress = {
     },
     base58ToHex(address: string): string {
         const decoded = decodeBase58(address).toString(16);
-        return decoded.slice(0, -8);
+        return '0x' + decoded.slice(2, -8);
     }
 };
